@@ -124,6 +124,16 @@ public class InsiderTest {
         ExtentReportManager.logPass("Locations block is displayed successfully.");
     }
 
+    @Test
+    public void testLifeAtInsiderBlock() {
+        ExtentReportManager.startTest("Life At Insider Block Verification");
+        homePage.clickCareers();
+        careersPage = new CareersPage(driver);
+
+        assertTrue(careersPage.isLifeAtInsiderBlockPresent(), "Life At Insider block is missing!");
+        ExtentReportManager.logPass("Life At Insider block is displayed successfully.");
+    }
+
 
     @AfterEach
     public void tearDown() {

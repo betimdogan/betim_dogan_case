@@ -22,6 +22,8 @@ public class CareersPage extends BasePage {
     private By locationsList = By.cssSelector("ul.glide__slides > li.glide__slide");
     private By locationName = By.cssSelector("div.location-info p.mb-0");
     private By locationCountry = By.cssSelector("div.location-info div.position-relative span:first-child");
+    private By lifeAtInsiderTitle = By.xpath("//h2[contains(@class, 'elementor-heading-title') and contains(text(), 'Life at Insider')]");
+    private By lifeAtInsiderDescription = By.xpath("//p[contains(text(), 'We’re here to grow and drive growth')]");
 
     private WebDriverWait wait;
 
@@ -215,4 +217,29 @@ public class CareersPage extends BasePage {
             return false;
         }
     }
+
+    public boolean isLifeAtInsiderBlockPresent() {
+        try {
+            WebElement lifeTitle = driver.findElement(lifeAtInsiderTitle);
+            WebElement lifeDescription = driver.findElement(lifeAtInsiderDescription);
+
+            scrollToElement(lifeTitle);
+            wait.until(ExpectedConditions.visibilityOf(lifeTitle));
+            boolean titleVisible = lifeTitle.isDisplayed();
+            ExtentReportManager.logInfo("Life at Insider block title expected: 'Life at Insider', actual: " + lifeTitle.getText());
+
+            scrollToElement(lifeDescription);
+            wait.until(ExpectedConditions.visibilityOf(lifeDescription));
+            boolean descriptionVisible = lifeDescription.isDisplayed();
+            ExtentReportManager.logInfo("Life at Insider block description verified: " + lifeDescription.getText());
+
+            boolean result = titleVisible && descriptionVisible;
+            ExtentReportManager.logInfo("Life at Insider block verification result: " + result);
+            return result;
+        } catch (Exception e) {
+            ExtentReportManager.logFail("Error while checking Life at Insider block elements: " + e.getMessage());
+            return false;
+        }
+    }
+
 }
