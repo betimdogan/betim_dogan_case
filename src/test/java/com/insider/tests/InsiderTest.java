@@ -1,11 +1,14 @@
 package com.insider.tests;
 
 import com.insider.pages.HomePage;
+import com.insider.pages.CareersPage;
 import com.insider.utils.ConfigReader;
 import com.insider.utils.ExtentReportManager;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -19,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class InsiderTest {
     private WebDriver driver;
     private HomePage homePage;
+    private CareersPage careersPage;
 
     @BeforeAll
     public static void startReport() {
@@ -45,19 +49,19 @@ public class InsiderTest {
         driver.manage().window().maximize();
         driver.get(ConfigReader.getProperty("baseUrl")); // Navigate to the base URL
 
-        // Call startTest() before initializing HomePage
-        ExtentReportManager.startTest("HomePage Verification Test");
+        ExtentReportManager.startTest("HomePage BeforeEach Setup Verification Test");
 
         homePage = new HomePage(driver);
-
-        // Handle cookie banner before tests
         homePage.handleCookieBanner();
     }
 
-
     @Test
     public void testHomePageVerifications() {
+        ExtentReportManager.startTest("HomePage Verification Test");
         try {
+            assertTrue(homePage.verifyHomePageMetaTags(), "Home page meta tag verification failed!");
+            ExtentReportManager.logPass("Home page meta tags verified successfully.");
+
             assertEquals("#1 Leader in Individualized, Cross-Channel CX — Insider", homePage.getOgTitle(), "Meta 'og:title' mismatch.");
             ExtentReportManager.logPass("OG Title verification passed.");
 
@@ -74,6 +78,31 @@ public class InsiderTest {
             throw e;
         }
     }
+
+
+    @Test
+    public void testCareersPageOpeningAndMetaTags() {
+        ExtentReportManager.startTest("Careers Page Opening and Meta Tags Verification");
+        homePage.clickCareers();
+        careersPage = new CareersPage(driver);
+
+        assertTrue(careersPage.isCareersPageOpened(), "Careers page did not open correctly.");
+        ExtentReportManager.logPass("Careers page opened successfully.");
+
+        assertTrue(careersPage.verifyCareersPageMetaTags(), "Meta tag verification failed!");
+        ExtentReportManager.logPass("Meta tags verified successfully.");
+    }
+
+    @Test
+    public void testTeamsBlockAndJobItems() {
+        ExtentReportManager.startTest("Teams Block and Job Items Verification");
+        homePage.clickCareers();
+        careersPage = new CareersPage(driver);
+
+        assertTrue(careersPage.isTeamsBlockPresent(), "Teams block is missing!");
+        ExtentReportManager.logPass("Teams block is displayed successfully.");
+    }
+
 
     @AfterEach
     public void tearDown() {
