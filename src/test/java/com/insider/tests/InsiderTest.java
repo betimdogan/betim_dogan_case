@@ -45,7 +45,6 @@ public class InsiderTest {
 
             driver = new ChromeDriver(options);
         }
-        // If needed, add support for other browsers here (Firefox, Edge, etc.)
 
         driver.manage().window().maximize();
         driver.get(ConfigReader.getProperty("baseUrl")); // Navigate to the base URL
@@ -113,6 +112,16 @@ public class InsiderTest {
         int jobItemsCountAfterClick = careersPage.getJobItemCount();
         assertEquals(15, jobItemsCountAfterClick, "Job items count after 'See all teams' is incorrect!");
         ExtentReportManager.logPass("Job items count after clicking 'See all teams' is correct: " + jobItemsCountAfterClick);
+    }
+
+    @Test
+    public void testLocationsBlock() {
+        ExtentReportManager.startTest("Locations Block Verification");
+        homePage.clickCareers();
+        careersPage = new CareersPage(driver);
+
+        assertTrue(careersPage.isLocationsBlockPresent(), "Locations block is missing!");
+        ExtentReportManager.logPass("Locations block is displayed successfully.");
     }
 
 

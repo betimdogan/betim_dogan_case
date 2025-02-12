@@ -17,12 +17,34 @@ public class CareersPage extends BasePage {
     private By teamsBlockTitle = By.xpath("//h3[contains(@class, 'category-title-media') and contains(text(), 'Find your calling')]");
     private By jobItems = By.cssSelector("div.job-item.col-12.col-lg-4.mt-5");
     private By seeAllTeamsButton = By.xpath("//a[contains(text(), 'See all teams') and contains(@class, 'loadmore')]");
+    private By locationsBlockTitle = By.xpath("//h3[contains(@class, 'category-title-media') and contains(text(), 'Our Locations')]");
+    private By locationsBlockDescription = By.xpath("//p[contains(@class, 'mt-5 mb-0 mt-lg-0 mx-auto pl-0') and contains(text(), '28 offices across 6 continents, home to 1100+ Insiders')]");
+    private By locationsList = By.cssSelector("ul.glide__slides > li.glide__slide");
+    private By locationName = By.cssSelector("div.location-info p.mb-0");
+    private By locationCountry = By.cssSelector("div.location-info div.position-relative span:first-child");
 
     private WebDriverWait wait;
 
     public CareersPage(WebDriver driver) {
         super(driver);
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public WebElement getTeamsBlockTitle() {
+        return driver.findElement(teamsBlockTitle);
+    }
+
+    public List<WebElement> getJobItems() {
+        return driver.findElements(jobItems);
+    }
+
+
+    public WebElement getSeeAllTeamsButton() {
+        return driver.findElement(seeAllTeamsButton);
+    }
+
+    public List<WebElement> getLocationElements() {
+        return driver.findElements(locationsList);
     }
 
     public boolean isCareersPageOpened() {
@@ -68,20 +90,6 @@ public class CareersPage extends BasePage {
             return false;
         }
     }
-
-    public WebElement getTeamsBlockTitle() {
-        return driver.findElement(teamsBlockTitle);
-    }
-
-    public List<WebElement> getJobItems() {
-        return driver.findElements(jobItems);
-    }
-
-
-    public WebElement getSeeAllTeamsButton() {
-        return driver.findElement(seeAllTeamsButton);
-    }
-
 
     public boolean isTeamsBlockPresent() {
         try {
@@ -151,6 +159,60 @@ public class CareersPage extends BasePage {
 
         } catch (Exception e) {
             ExtentReportManager.logFail("Failed to click 'See all teams' button: " + e.getMessage());
+        }
+    }
+
+    public boolean isLocationsBlockPresent() {
+        try {
+            WebElement locationsTitle = driver.findElement(locationsBlockTitle);
+            WebElement locationsDescription = driver.findElement(locationsBlockDescription);
+
+            scrollToElement(locationsTitle);
+            wait.until(ExpectedConditions.visibilityOf(locationsTitle));
+            boolean titleVisible = locationsTitle.isDisplayed();
+            ExtentReportManager.logInfo("Locations block title expected: 'Our Locations', actual: " + locationsTitle.getText());
+
+            scrollToElement(locationsDescription);
+            wait.until(ExpectedConditions.visibilityOf(locationsDescription));
+            boolean descriptionVisible = locationsDescription.isDisplayed();
+            ExtentReportManager.logInfo("Locations block description expected: '28 offices across 6 continents, home to 1100+ Insiders', actual: " + locationsDescription.getText());
+
+            // Verify locations list
+            List<WebElement> locations = getLocationElements();
+            int locationCount = locations.size();
+            StringBuilder locationsLog = new StringBuilder(locationCount + " locations found: ");
+
+            for (int i = 0; i < locations.size(); i++) {
+                WebElement location = locations.get(i);
+                scrollToElement(location); // Scroll to each location to ensure visibility
+                Thread.sleep(500); // Small delay to allow content to load
+
+                String city = "-";
+                String country = "-";
+
+                try {
+                    city = location.findElement(locationName).getText();
+                } catch (Exception e) {
+                    ExtentReportManager.logInfo("City name not found for location " + (i + 1));
+                }
+
+                try {
+                    country = location.findElement(locationCountry).getText();
+                } catch (Exception e) {
+                    ExtentReportManager.logInfo("Country name not found for location " + (i + 1));
+                }
+
+                locationsLog.append((i + 1) + ": " + city + " - " + country + ", ");
+            }
+
+            ExtentReportManager.logInfo(locationsLog.toString());
+
+            boolean result = titleVisible && descriptionVisible && locationCount > 0;
+            ExtentReportManager.logInfo("Locations block verification result: " + result);
+            return result;
+        } catch (Exception e) {
+            ExtentReportManager.logFail("Error while checking Locations block elements: " + e.getMessage());
+            return false;
         }
     }
 }
