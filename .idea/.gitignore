@@ -1,0 +1,43 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+/out/
+/shelf/
+/workspace.xml
+/httpRequests/
+/dataSources/
+/dataSources.local.xml
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+/logs/
+*.log
+*.tmp
+
+# Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+/.idea/libraries/Maven__/
+
+# Test Output
+/test-output/
+*.html
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Reports
+/reports/
+/extent-reports/
+
+# Configurations
+/config/
+*.properties
