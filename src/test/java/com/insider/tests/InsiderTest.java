@@ -11,6 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -101,6 +102,17 @@ public class InsiderTest {
 
         assertTrue(careersPage.isTeamsBlockPresent(), "Teams block is missing!");
         ExtentReportManager.logPass("Teams block is displayed successfully.");
+
+        int initialJobItemCount = careersPage.getJobItemCount();
+        assertEquals(3, initialJobItemCount, "Job items count before clicking 'See all teams' is incorrect!");
+        ExtentReportManager.logInfo("Initial job items count before clicking 'See all teams': " + initialJobItemCount);
+
+        careersPage.scrollToElement(careersPage.getSeeAllTeamsButton());
+        careersPage.clickSeeAllTeams();
+
+        int jobItemsCountAfterClick = careersPage.getJobItemCount();
+        assertEquals(15, jobItemsCountAfterClick, "Job items count after 'See all teams' is incorrect!");
+        ExtentReportManager.logPass("Job items count after clicking 'See all teams' is correct: " + jobItemsCountAfterClick);
     }
 
 

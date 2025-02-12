@@ -69,11 +69,25 @@ public class CareersPage extends BasePage {
         }
     }
 
+    public WebElement getTeamsBlockTitle() {
+        return driver.findElement(teamsBlockTitle);
+    }
+
+    public List<WebElement> getJobItems() {
+        return driver.findElements(jobItems);
+    }
+
+
+    public WebElement getSeeAllTeamsButton() {
+        return driver.findElement(seeAllTeamsButton);
+    }
+
+
     public boolean isTeamsBlockPresent() {
         try {
-            WebElement teamsBlock = driver.findElement(teamsBlockTitle);
-            List<WebElement> jobItemElements = driver.findElements(jobItems);
-            WebElement seeAllTeams = driver.findElement(seeAllTeamsButton);
+            WebElement teamsBlock = getTeamsBlockTitle();
+            List<WebElement> jobItemElements = getJobItems();
+            WebElement seeAllTeams = getSeeAllTeamsButton();
 
             scrollToElement(teamsBlock);
             wait.until(ExpectedConditions.visibilityOf(teamsBlock));
@@ -99,13 +113,12 @@ public class CareersPage extends BasePage {
 
     public int getJobItemCount() {
         try {
-            List<WebElement> jobItemElements = driver.findElements(jobItems);
+            List<WebElement> jobItemElements = getJobItems();
             int count = jobItemElements.size();
 
-            // Scroll to first job item if present
+            // Scroll to last job item if present
             if (count > 0) {
-                JavascriptExecutor js = (JavascriptExecutor) driver;
-                js.executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", jobItemElements.get(0));
+                scrollToElement(jobItemElements.get(count - 1));
             }
 
             ExtentReportManager.logInfo("Current job item count: " + count);
@@ -116,22 +129,26 @@ public class CareersPage extends BasePage {
         }
     }
 
-    public WebElement getSeeAllTeamsButton() {
-        return driver.findElement(seeAllTeamsButton);
-    }
 
     public void clickSeeAllTeams() {
         try {
-            WebElement seeAllTeams = driver.findElement(seeAllTeamsButton);
+            WebElement seeAllTeams = getSeeAllTeamsButton();
+
+            // Check job items count before clicking
+            int initialJobItemCount = getJobItemCount();
+            ExtentReportManager.logInfo("Initial job items count before clicking 'See all teams': " + initialJobItemCount);
 
             // Scroll to 'See all teams' button
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", seeAllTeams);
+            scrollToElement(seeAllTeams);
 
             wait.until(ExpectedConditions.elementToBeClickable(seeAllTeams));
             seeAllTeams.click();
-
             ExtentReportManager.logPass("Clicked on 'See all teams' button.");
+
+            // Wait for job items to expand from 3 to 15
+            wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(jobItems, 3));
+            ExtentReportManager.logPass("Teams are expanded after clicking on 'See all teams' button.");
+
         } catch (Exception e) {
             ExtentReportManager.logFail("Failed to click 'See all teams' button: " + e.getMessage());
         }
