@@ -2,6 +2,7 @@ package com.insider.tests;
 
 import com.insider.pages.HomePage;
 import com.insider.pages.CareersPage;
+import com.insider.pages.JobsListingPage;
 import com.insider.utils.ConfigReader;
 import com.insider.utils.ExtentReportManager;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -19,11 +20,13 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class InsiderTest {
     private WebDriver driver;
     private HomePage homePage;
     private CareersPage careersPage;
+    private JobsListingPage jobsListingPage;
 
     @BeforeAll
     public static void startReport() {
@@ -56,6 +59,7 @@ public class InsiderTest {
     }
 
     @Test
+    @Order(1)
     public void testHomePageVerifications() {
         ExtentReportManager.startTest("HomePage Verification Test");
         try {
@@ -81,6 +85,7 @@ public class InsiderTest {
 
 
     @Test
+    @Order(2)
     public void testCareersPageOpeningAndMetaTags() {
         ExtentReportManager.startTest("Careers Page Opening and Meta Tags Verification");
         homePage.clickCareers();
@@ -94,6 +99,7 @@ public class InsiderTest {
     }
 
     @Test
+    @Order(3)
     public void testTeamsBlockAndJobItems() {
         ExtentReportManager.startTest("Teams Block and Job Items Verification");
         homePage.clickCareers();
@@ -115,6 +121,7 @@ public class InsiderTest {
     }
 
     @Test
+    @Order(4)
     public void testLocationsBlock() {
         ExtentReportManager.startTest("Locations Block Verification");
         homePage.clickCareers();
@@ -125,6 +132,7 @@ public class InsiderTest {
     }
 
     @Test
+    @Order(5)
     public void testLifeAtInsiderBlock() {
         ExtentReportManager.startTest("Life At Insider Block Verification");
         homePage.clickCareers();
@@ -132,6 +140,69 @@ public class InsiderTest {
 
         assertTrue(careersPage.isLifeAtInsiderBlockPresent(), "Life At Insider block is missing!");
         ExtentReportManager.logPass("Life At Insider block is displayed successfully.");
+    }
+
+    @Test
+    @Order(6)
+    public void testVerifyJobsListingPage() {
+        ExtentReportManager.startTest("Jobs Listing Page Verification");
+        driver.get("https://useinsider.com/careers/quality-assurance/");
+        jobsListingPage = new JobsListingPage(driver);
+
+        assertTrue(jobsListingPage.isJobsListingPageOpened(), "Jobs Listing Page did not open correctly.");
+        ExtentReportManager.logPass("Navigated to Jobs Listing Page successfully.");
+
+        assertTrue(jobsListingPage.verifyJobsListingPageMetaTags(), "Jobs Listing Page meta tag verification failed!");
+        ExtentReportManager.logPass("Jobs Listing Page meta tags verified successfully.");
+
+        assertTrue(jobsListingPage.isJobsListingPageElementsPresent(), "Jobs Listing Page elements verification failed!");
+        ExtentReportManager.logPass("Jobs Listing Page elements verified successfully.");
+    }
+
+    @Test
+    @Order(7)
+    public void testOpenPositionsPage() {
+        ExtentReportManager.startTest("Open Positions Page Verification Test");
+        driver.get("https://useinsider.com/careers/quality-assurance/");
+        JobsListingPage jobsListingPage = new JobsListingPage(driver);
+
+        jobsListingPage.clickSeeAllQAJobs();
+        assertTrue(jobsListingPage.verifyOpenPositionsPage(), "Open Positions Page URL verification failed!");
+        ExtentReportManager.logPass("Successfully navigated to Open Positions Page.");
+
+        assertTrue(jobsListingPage.verifyOpenPositionsPageMetaTags(), "Open Positions Page metadata verification failed!");
+        ExtentReportManager.logPass("Open Positions Page metadata verified successfully.");
+
+        assertTrue(jobsListingPage.verifyOpenPositionsElements(), "Open Positions Page elements verification failed!");
+        ExtentReportManager.logPass("Open Positions Page elements verified successfully.");
+    }
+
+    @Test
+    @Order(8)
+    public void testVerifyJobsFilteringByLocation() {
+        ExtentReportManager.startTest("Jobs Filtering by Location Test");
+        driver.get("https://useinsider.com/careers/quality-assurance/");
+        JobsListingPage jobsListingPage = new JobsListingPage(driver);
+
+        jobsListingPage.clickSeeAllQAJobs();
+
+        assertTrue(jobsListingPage.verifyOpenPositionsElements(), "Open Positions Page elements verification failed!");
+        ExtentReportManager.logPass("Open Positions Page elements verified successfully.");
+
+        jobsListingPage.filterByLocation("Istanbul, Turkiye");
+        ExtentReportManager.logPass("Filtered job listings by location: Istanbul, Turkiye");
+
+        // Verify that all jobs belong to the 'Quality Assurance' department
+        assertTrue(jobsListingPage.verifyJobsDepartments("Quality Assurance"), "Job departments verification failed!");
+        ExtentReportManager.logPass("All job listings belong to the 'Quality Assurance' department.");
+
+        // Verify that all jobs are located in 'Istanbul, Turkiye'
+        assertTrue(jobsListingPage.verifyJobsLocations("Istanbul, Turkiye"), "Job locations verification failed!");
+        ExtentReportManager.logPass("All job listings are correctly located in 'Istanbul, Turkiye'.");
+
+        // Hover and click on the 'View Role' button
+        assertTrue(jobsListingPage.hoverAndClickViewRole(), "Failed to click 'View Role' button or incorrect redirection!");
+        ExtentReportManager.logPass("Successfully hovered and clicked on 'View Role' button, verified redirection.");
     }
 
 
