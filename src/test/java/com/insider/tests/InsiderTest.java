@@ -7,18 +7,11 @@ import com.insider.utils.ConfigReader;
 import com.insider.utils.ExtentReportManager;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -62,27 +55,17 @@ public class InsiderTest {
     @Order(1)
     public void testHomePageVerifications() {
         ExtentReportManager.startTest("HomePage Verification Test");
-        try {
-            assertTrue(homePage.verifyHomePageMetaTags(), "Home page meta tag verification failed!");
-            ExtentReportManager.logPass("Home page meta tags verified successfully.");
 
-            assertEquals("#1 Leader in Individualized, Cross-Channel CX — Insider", homePage.getOgTitle(), "Meta 'og:title' mismatch.");
-            ExtentReportManager.logPass("OG Title verification passed.");
+        assertAll(
+                () -> assertTrue(homePage.verifyHomePageMetaTags(), "Home page meta tag verification failed!"),
+                () -> assertEquals("#1 Leader in Individualized, Cross-Channel CX — Insider", homePage.getOgTitle(), "Meta 'og:title' mismatch."),
+                () -> assertTrue(homePage.isLogoCorrect(), "Logo is incorrect."),
+                () -> assertTrue(homePage.isNavbarPresent(), "Navbar is missing."),
+                () -> assertTrue(homePage.isAnnounceInfoPresent(), "Announce info missing.")
+        );
 
-            assertTrue(homePage.isLogoCorrect(), "Logo is incorrect.");
-            ExtentReportManager.logPass("Logo verification passed.");
-
-            assertTrue(homePage.isNavbarPresent(), "Navbar is missing.");
-            ExtentReportManager.logPass("Navbar verification passed.");
-
-            assertTrue(homePage.isAnnounceInfoPresent(), "Announce info missing.");
-            ExtentReportManager.logPass("Announce info verification passed.");
-        } catch (Exception e) {
-            ExtentReportManager.logFail("Test failed: " + e.getMessage());
-            throw e;
-        }
+        ExtentReportManager.logPass("All homepage verifications passed successfully.");
     }
-
 
     @Test
     @Order(2)
@@ -91,11 +74,12 @@ public class InsiderTest {
         homePage.clickCareers();
         careersPage = new CareersPage(driver);
 
-        assertTrue(careersPage.isCareersPageOpened(), "Careers page did not open correctly.");
-        ExtentReportManager.logPass("Careers page opened successfully.");
+        assertAll(
+                () -> assertTrue(careersPage.isCareersPageOpened(), "Careers page did not open correctly."),
+                () -> assertTrue(careersPage.verifyCareersPageMetaTags(), "Meta tag verification failed!")
+        );
 
-        assertTrue(careersPage.verifyCareersPageMetaTags(), "Meta tag verification failed!");
-        ExtentReportManager.logPass("Meta tags verified successfully.");
+        ExtentReportManager.logPass("Careers page and metadata verified successfully.");
     }
 
     @Test
@@ -149,14 +133,13 @@ public class InsiderTest {
         driver.get("https://useinsider.com/careers/quality-assurance/");
         jobsListingPage = new JobsListingPage(driver);
 
-        assertTrue(jobsListingPage.isJobsListingPageOpened(), "Jobs Listing Page did not open correctly.");
-        ExtentReportManager.logPass("Navigated to Jobs Listing Page successfully.");
+        assertAll(
+                () -> assertTrue(jobsListingPage.isJobsListingPageOpened(), "Jobs Listing Page did not open correctly."),
+                () -> assertTrue(jobsListingPage.verifyJobsListingPageMetaTags(), "Jobs Listing Page meta tag verification failed!"),
+                () -> assertTrue(jobsListingPage.isJobsListingPageElementsPresent(), "Jobs Listing Page elements verification failed!")
+        );
 
-        assertTrue(jobsListingPage.verifyJobsListingPageMetaTags(), "Jobs Listing Page meta tag verification failed!");
-        ExtentReportManager.logPass("Jobs Listing Page meta tags verified successfully.");
-
-        assertTrue(jobsListingPage.isJobsListingPageElementsPresent(), "Jobs Listing Page elements verification failed!");
-        ExtentReportManager.logPass("Jobs Listing Page elements verified successfully.");
+        ExtentReportManager.logPass("Jobs Listing Page verified successfully.");
     }
 
     @Test
@@ -167,14 +150,14 @@ public class InsiderTest {
         JobsListingPage jobsListingPage = new JobsListingPage(driver);
 
         jobsListingPage.clickSeeAllQAJobs();
-        assertTrue(jobsListingPage.verifyOpenPositionsPage(), "Open Positions Page URL verification failed!");
-        ExtentReportManager.logPass("Successfully navigated to Open Positions Page.");
 
-        assertTrue(jobsListingPage.verifyOpenPositionsPageMetaTags(), "Open Positions Page metadata verification failed!");
-        ExtentReportManager.logPass("Open Positions Page metadata verified successfully.");
+        assertAll(
+                () -> assertTrue(jobsListingPage.verifyOpenPositionsPage(), "Open Positions Page URL verification failed!"),
+                () -> assertTrue(jobsListingPage.verifyOpenPositionsPageMetaTags(), "Open Positions Page metadata verification failed!"),
+                () -> assertTrue(jobsListingPage.verifyOpenPositionsElements(), "Open Positions Page elements verification failed!")
+        );
 
-        assertTrue(jobsListingPage.verifyOpenPositionsElements(), "Open Positions Page elements verification failed!");
-        ExtentReportManager.logPass("Open Positions Page elements verified successfully.");
+        ExtentReportManager.logPass("Open Positions Page successfully verified: URL, metadata, and UI elements.");
     }
 
     @Test
@@ -192,19 +175,18 @@ public class InsiderTest {
         jobsListingPage.filterByLocation("Istanbul, Turkiye");
         ExtentReportManager.logPass("Filtered job listings by location: Istanbul, Turkiye");
 
-        // Verify that all jobs belong to the 'Quality Assurance' department
-        assertTrue(jobsListingPage.verifyJobsDepartments("Quality Assurance"), "Job departments verification failed!");
-        ExtentReportManager.logPass("All job listings belong to the 'Quality Assurance' department.");
+        // Verify that all jobs belong to the 'Quality Assurance' department and located in 'Istanbul, Turkiye'
+        assertAll(
+                () -> assertTrue(jobsListingPage.verifyJobsDepartments("Quality Assurance"), "Job departments verification failed!"),
+                () -> assertTrue(jobsListingPage.verifyJobsLocations("Istanbul, Turkiye"), "Job locations verification failed!")
+        );
 
-        // Verify that all jobs are located in 'Istanbul, Turkiye'
-        assertTrue(jobsListingPage.verifyJobsLocations("Istanbul, Turkiye"), "Job locations verification failed!");
-        ExtentReportManager.logPass("All job listings are correctly located in 'Istanbul, Turkiye'.");
+        ExtentReportManager.logPass("All job listings are in the 'Quality Assurance' department and located in 'Istanbul, Turkiye'.");
 
         // Hover and click on the 'View Role' button
         assertTrue(jobsListingPage.hoverAndClickViewRole(), "Failed to click 'View Role' button or incorrect redirection!");
         ExtentReportManager.logPass("Successfully hovered and clicked on 'View Role' button, verified redirection.");
     }
-
 
     @AfterEach
     public void tearDown() {

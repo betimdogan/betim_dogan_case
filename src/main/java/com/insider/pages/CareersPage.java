@@ -60,37 +60,12 @@ public class CareersPage extends BasePage {
     }
 
     public boolean verifyCareersPageMetaTags() {
-        try {
-            String expectedTitle = "Ready to disrupt? | Insider Careers";
-            String expectedDescription = "Learn about Insider story";
-            String expectedUrl = "https://useinsider.com/careers/";
-            String expectedSiteName = "Insider";
-
-            String actualTitle = driver.findElement(By.xpath("//meta[@property='og:title']")).getAttribute("content");
-            String actualDescription = driver.findElement(By.xpath("//meta[@property='og:description']")).getAttribute("content");
-            String actualUrl = driver.findElement(By.xpath("//meta[@property='og:url']")).getAttribute("content");
-            String actualSiteName = driver.findElement(By.xpath("//meta[@property='og:site_name']")).getAttribute("content");
-
-            ExtentReportManager.logInfo("OG Title expected: '" + expectedTitle + "', actual: '" + actualTitle + "'");
-            ExtentReportManager.logInfo("OG Description expected: '" + expectedDescription + "', actual: '" + actualDescription + "'");
-            ExtentReportManager.logInfo("OG URL expected: '" + expectedUrl + "', actual: '" + actualUrl + "'");
-            ExtentReportManager.logInfo("OG Site Name expected: '" + expectedSiteName + "', actual: '" + actualSiteName + "'");
-
-            boolean result = actualTitle.equals(expectedTitle) &&
-                    actualDescription.contains(expectedDescription) &&
-                    actualUrl.equals(expectedUrl) &&
-                    actualSiteName.equals(expectedSiteName);
-
-            if (!result) {
-                ExtentReportManager.logFail("Meta tag verification failed!");
-            } else {
-                ExtentReportManager.logPass("Meta tag verification passed!");
-            }
-            return result;
-        } catch (Exception e) {
-            ExtentReportManager.logFail("Meta tag verification failed due to an exception: " + e.getMessage());
-            return false;
-        }
+        return verifyMetaTags(
+                "Ready to disrupt? | Insider Careers",
+                "Learn about Insider story",
+                "https://useinsider.com/careers/",
+                "Insider"
+        );
     }
 
     public boolean isTeamsBlockPresent() {

@@ -2,13 +2,10 @@ package com.insider.pages;
 
 import com.insider.base.BasePage;
 import com.insider.utils.ExtentReportManager;
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,33 +39,12 @@ public class JobsListingPage extends BasePage {
     }
 
     public boolean verifyJobsListingPageMetaTags() {
-        try {
-            String expectedTitle = "Insider quality assurance job opportunities";
-            String expectedDescription = "Do you have an eye for detail? Our Q&A team is committed to testing everything we build. Explore Insider quality assurance job opportunities.";
-            String expectedUrl = "https://useinsider.com/careers/quality-assurance/";
-            String expectedSiteName = "Insider";
-
-            String actualTitle = driver.findElement(By.xpath("//meta[@property='og:title']")).getAttribute("content");
-            String actualDescription = driver.findElement(By.xpath("//meta[@property='og:description']")).getAttribute("content");
-            String actualUrl = driver.findElement(By.xpath("//meta[@property='og:url']")).getAttribute("content");
-            String actualSiteName = driver.findElement(By.xpath("//meta[@property='og:site_name']")).getAttribute("content");
-
-            ExtentReportManager.logInfo("OG Title expected: '" + expectedTitle + "', actual: '" + actualTitle + "'");
-            ExtentReportManager.logInfo("OG Description expected: '" + expectedDescription + "', actual: '" + actualDescription + "'");
-            ExtentReportManager.logInfo("OG URL expected: '" + expectedUrl + "', actual: '" + actualUrl + "'");
-            ExtentReportManager.logInfo("OG Site Name expected: '" + expectedSiteName + "', actual: '" + actualSiteName + "'");
-
-            boolean result = actualTitle.equals(expectedTitle) &&
-                    actualDescription.contains(expectedDescription) &&
-                    actualUrl.equals(expectedUrl) &&
-                    actualSiteName.equals(expectedSiteName);
-
-            ExtentReportManager.logInfo("Jobs Listing Page meta tag verification result: " + result);
-            return result;
-        } catch (Exception e) {
-            ExtentReportManager.logFail("Jobs Listing Page meta tag verification failed: " + e.getMessage());
-            return false;
-        }
+        return verifyMetaTags(
+                "Insider quality assurance job opportunities",
+                "Do you have an eye for detail? Our Q&A team is committed to testing everything we build. Explore Insider quality assurance job opportunities.",
+                "https://useinsider.com/careers/quality-assurance/",
+                "Insider"
+        );
     }
 
     public boolean isJobsListingPageElementsPresent() {
@@ -114,33 +90,12 @@ public class JobsListingPage extends BasePage {
     }
 
     public boolean verifyOpenPositionsPageMetaTags() {
-        try {
-            String expectedOgTitle = "Insider open positions | Insider";
-            String expectedOgDescription = "Looking for your next career move? Explore all open positions at Insider and see what it's like being a part of culture.";
-            String expectedOgUrl = "https://useinsider.com/careers/open-positions/";
-            String expectedOgSiteName = "Insider";
-
-            String actualOgTitle = driver.findElement(By.xpath("//meta[@property='og:title']")).getAttribute("content");
-            String actualOgDescription = driver.findElement(By.xpath("//meta[@property='og:description']")).getAttribute("content");
-            String actualOgUrl = driver.findElement(By.xpath("//meta[@property='og:url']")).getAttribute("content");
-            String actualOgSiteName = driver.findElement(By.xpath("//meta[@property='og:site_name']")).getAttribute("content");
-
-            ExtentReportManager.logInfo("OG Title expected: '" + expectedOgTitle + "', actual: '" + actualOgTitle + "'");
-            ExtentReportManager.logInfo("OG Description expected: '" + expectedOgDescription + "', actual: '" + actualOgDescription + "'");
-            ExtentReportManager.logInfo("OG URL expected: '" + expectedOgUrl + "', actual: '" + actualOgUrl + "'");
-            ExtentReportManager.logInfo("OG Site Name expected: '" + expectedOgSiteName + "', actual: '" + actualOgSiteName + "'");
-
-            boolean result = actualOgTitle.equals(expectedOgTitle) &&
-                    actualOgDescription.contains(expectedOgDescription) &&
-                    actualOgUrl.equals(expectedOgUrl) &&
-                    actualOgSiteName.equals(expectedOgSiteName);
-
-            ExtentReportManager.logInfo("Open Positions Page metadata verification result: " + result);
-            return result;
-        } catch (Exception e) {
-            ExtentReportManager.logFail("Open Positions Page metadata verification failed: " + e.getMessage());
-            return false;
-        }
+        return verifyMetaTags(
+                "Insider open positions | Insider",
+                "Looking for your next career move? Explore all open positions at Insider and see what it's like being a part of culture.",
+                "https://useinsider.com/careers/open-positions/",
+                "Insider"
+        );
     }
 
     public boolean verifyOpenPositionsPage() {
@@ -341,5 +296,4 @@ public class JobsListingPage extends BasePage {
             return false;
         }
     }
-
 }
